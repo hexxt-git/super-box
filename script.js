@@ -30,6 +30,9 @@ function play (){
     paused = false
     loop()
 };
+function average( values ){
+    return Math.floor(( values[0] + values[1] ) / 2)
+}
 function countCells(){
     let count = {}
     for ( let i in types ){
@@ -47,9 +50,10 @@ let canvas = $('canvas')
 let c = canvas.getContext('2d')
 let width = $('container').clientWidth
 let height = $('container').clientHeight
-let fps = 100
+let stepsPerSecond = 60
 let res = 8
 let paused = false
+let maxVelocity = 4
 
 canvas.width = width
 canvas.height = height
@@ -145,9 +149,12 @@ let renderMap = (map)=>{
 
 let updateMap = (map)=>{
 
+    let deltaMap = []  
     for ( let y in map ){
+        deltaMap.push([])
         for ( let x in map[y] ){
             map[y][x].updated = false
+            deltaMap[y].push(map[y][x])
         }
     }
 
@@ -155,62 +162,66 @@ let updateMap = (map)=>{
         for ( let x = 0 ; x < map[0].length ; x++ ){
         switch (map[y][x].behaviour) {
             case 'dust':
-                let updatedRight = false;
                 if( map[y][x].vy > 0 ){
-                    map[y][x].vy--
+                    if(map[y][x].vy < maxVelocity ) map[y][x].vy += -1
                 } else if ( map[y][x].vy < 0 ){
-                    map[y][x].vy++
+                    if(map[y][x].vy < maxVelocity ) map[y][x].vy += -1
                 }
                 if( map[y][x].vx > 0 ){
-                    map[y][x].vx--
+                    if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
                 } else if ( map[y][x].vx < 0 ){
-                    map[y][x].vx++
+                    if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
                 }
                 if(map[y+1] != undefined ){
                     if( map[y+1][x].denisty < map[y][x].denisty ){
-                        map[y][x].vy += 1
+                        if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
                     }
                      if( map[y+1][x+1] != undefined) {
                         if(map[y+1][x+1].denisty < map[y][x].denisty){
-                            map[y][x].vy += 1
-                            map[y][x].vx += 1
-                            updatedRight = true
+                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
                         }
                     }
-                    if( map[y+1][x-1] != undefined & !updatedRight ){
+                    if( map[y+1][x-1] != undefined ){
                         if(map[y+1][x-1].denisty < map[y][x].denisty){
-                            map[y][x].vy += 1
-                            map[y][x].vx += -1
+                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
                         }
                     }
                 } 
                 break;
             case 'fluid':
+                let moved = false
                 if(map[y+1] != undefined ){
                     if( map[y+1][x].denisty < map[y][x].denisty ){
                         map[y][x].vy = 1
+                        moved = true
                     }
                     if( map[y+1][x+1] != undefined ){
-                        if(map[y+1][x+1].denisty < map[y][x].denisty){
-                            map[y][x].vy += 1
-                            map[y][x].vx += 1
+                        if(map[y+1][x+1].denisty < map[y][x].denisty ){
+                            if(map[y][x].vy < maxVelocity )map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity )map[y][x].vx += 1
+                            moved = true
                         }
                     }
                     if( map[y+1][x-1] != undefined ){
-                        if(map[y+1][x-1].denisty < map[y][x].denisty){
-                            map[y][x].vy += 1
-                            map[y][x].vx += -1
+                        if(map[y+1][x-1].denisty < map[y][x].denisty ){
+                            if(map[y][x].vy < maxVelocity )map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity )map[y][x].vx += -1
+                            moved = true
                         }
                     }
                 }
                 if( map[y][x+1] != undefined ){
-                    if(map[y][x+1].denisty < map[y][x].denisty){
-                        map[y][x].vx += 1
+                    if(map[y][x+1].denisty < map[y][x].denisty & !moved & rdm(1) ){
+                        if(map[y][x].vx < maxVelocity )map[y][x].vx += 1
+                        moved = true
                     }
                 }
                 if( map[y][x-1] != undefined ){
-                    if(map[y][x-1].denisty < map[y][x].denisty){
-                        map[y][x].vx += -1
+                    if(map[y][x-1].denisty < map[y][x].denisty & !moved ){
+                        if(map[y][x].vx < maxVelocity )map[y][x].vx += -1
+                        moved = true
                     }
                 }                
                 break;
@@ -220,14 +231,6 @@ let updateMap = (map)=>{
         }
     }
 
-    let deltaMap = []  
-    for ( let y in map ){
-        deltaMap.push([])
-        for ( let x in map[y] ){
-            deltaMap[y].push(map[y][x])
-        }
-    }
-    
     for ( let y = 0 ; y < map.length ; y++ ){       //moving based on the velocity
         for ( let x = 0 ; x < map[0].length ; x++ ){
             if (!map[y][x].updatable) continue
@@ -277,43 +280,51 @@ function loop(){
         if ( !paused ){
         requestAnimationFrame(loop)
         }
-    }, 1000 / fps);
+    }, 1000 / stepsPerSecond);
     step++
 
 //   --updates--
 
-    //if(step%2==0) world[5][60]= new Cell('sand')
-    //if(step%3==0) world[5][random( 5, 20, true)]= new Cell(typesList[rdm(typesList.length-1)])
-    //world[5][random( 0, world[0].length-1, true)]= new Cell('water')
-    world = updateMap(world)
+    currentMap = updateMap(currentMap)
+    cursor.x = mouse.x
+    cursor.y = mouse.y 
+    cursor.style = `hsl(${average(types[tool].hueRange)}, ${average(types[tool].saturationRange)}%, ${average(types[tool].lightnessRange)}%)`;
+    if(mouse.z){
+        currentMap[Math.floor(cursor.y/res)][Math.floor(cursor.x/res)] = new Cell(tool)
+    }
 
 //   --rendering--
 
     c.clearRect( 0, 0, width, height)
-    renderMap(world)
-
+    renderMap(currentMap)
+    c.fillStyle = cursor.style;
+    c.fillRect( Math.floor(cursor.x/res)*res, Math.floor(cursor.y/res)*res, res, res)
 }
 
 let world = []
 for( let y = 0 ; y < Math.round(height/res) ; y++ ){
     world.push([])
     for( let x = 0 ; x < Math.round(width/res) ; x++ ){
-        //world[y].push( new Cell(typesList[rdm(1)]))
-        world[y].push( new Cell(typesList[rdm(typesList.length-2)]))
-        //world[y].push( new Cell('air'))
+        world[y].push( new Cell(typesList[rdm(2)]))
     }
 }
 
+let tool = 'water'
+for( let i in types ){
+    $('materials').innerHTML += `<div class="selection" id="${i}-selector">${i}</div>`
+    $(i+'-selector').style.background = `hsl(${average(types[i].hueRange)}, ${average(types[i].saturationRange)}%, ${average(types[i].lightnessRange)}%)`   
+}
+for( let i in types ){
+    $(i+'-selector').addEventListener('click', ()=>{
+        tool = i
+    })
+}
 
-renderMap (world)
-world = updateMap(world)
-c.clearRect( 0, 0, width, height)
-renderMap (world)
+let cursor = {
+    x: width/2,
+    y: height/2,
+    style: `white`,
+}
 
-
-
-
-
-
-
+let currentMap = world;
 loop()
