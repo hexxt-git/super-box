@@ -60,7 +60,7 @@ canvas.height = height
 
 c.fillStyle = '#CCC'
 c.strokeStyle = '#CCC'
-c.font = '15px monospace'
+c.font = '10px monospace'
 
 let mouse = {
     x: width/2,
@@ -163,35 +163,41 @@ let updateMap = (map)=>{
         switch (map[y][x].behaviour) {
             case 'dust':
                 if( map[y][x].vy > 0 ){
-                    if(map[y][x].vy < maxVelocity ) map[y][x].vy += -1
+                    if(map[y][x].vy < maxVelocity )  map[y][x].vy += -1
                 } else if ( map[y][x].vy < 0 ){
-                    if(map[y][x].vy < maxVelocity ) map[y][x].vy += -1
+                    if(map[y][x].vy < maxVelocity )  map[y][x].vy += -1
                 }
                 if( map[y][x].vx > 0 ){
-                    if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
+                    if(map[y][x].vx < maxVelocity )  map[y][x].vx += -1
                 } else if ( map[y][x].vx < 0 ){
-                    if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                    if(map[y][x].vx < maxVelocity )  map[y][x].vx += 1
                 }
                 if(map[y+1] != undefined ){
                     if( map[y+1][x].denisty < map[y][x].denisty ){
-                        if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
+                        if(map[y][x].vy < maxVelocity )  map[y][x].vy += 1
                     }
                      if( map[y+1][x+1] != undefined) {
                         if(map[y+1][x+1].denisty < map[y][x].denisty){
-                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                            if(map[y][x].vy < maxVelocity )  map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity )  map[y][x].vx += 1
                         }
                     }
                     if( map[y+1][x-1] != undefined ){
                         if(map[y+1][x-1].denisty < map[y][x].denisty){
-                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
+                            if(map[y][x].vy < maxVelocity )  map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity )  map[y][x].vx += -1
                         }
                     }
                 } 
                 break;
             case 'fluid':
                 let moved = false
+
+                if( map[y][x].vy < -2 ) map[y][x].vy++
+                if( map[y][x].vy < -2 ) map[y][x].vy++
+                if( map[y][x].vy > +2 ) map[y][x].vy--
+                if( map[y][x].vx > +2 ) map[y][x].vx--
+
                 if(map[y+1] != undefined ){
                     if( map[y+1][x].denisty < map[y][x].denisty ){
                         map[y][x].vy = 1
@@ -199,28 +205,28 @@ let updateMap = (map)=>{
                     }
                     if( map[y+1][x+1] != undefined ){
                         if(map[y+1][x+1].denisty < map[y][x].denisty ){
-                            if(map[y][x].vy < maxVelocity )map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity )map[y][x].vx += 1
+                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
                             moved = true
                         }
                     }
                     if( map[y+1][x-1] != undefined ){
                         if(map[y+1][x-1].denisty < map[y][x].denisty ){
-                            if(map[y][x].vy < maxVelocity )map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity )map[y][x].vx += -1
+                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
                             moved = true
                         }
                     }
                 }
                 if( map[y][x+1] != undefined ){
                     if(map[y][x+1].denisty < map[y][x].denisty & !moved & rdm(1) ){
-                        if(map[y][x].vx < maxVelocity )map[y][x].vx += 1
+                        if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
                         moved = true
                     }
                 }
                 if( map[y][x-1] != undefined ){
                     if(map[y][x-1].denisty < map[y][x].denisty & !moved ){
-                        if(map[y][x].vx < maxVelocity )map[y][x].vx += -1
+                        if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
                         moved = true
                     }
                 }                
