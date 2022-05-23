@@ -48,7 +48,7 @@ let c = canvas.getContext('2d')
 let width = $('container').clientWidth
 let height = $('container').clientHeight
 let fps = 100
-let res = 10
+let res = 8
 let paused = false
 
 canvas.width = width
@@ -155,6 +155,7 @@ let updateMap = (map)=>{
         for ( let x = 0 ; x < map[0].length ; x++ ){
         switch (map[y][x].behaviour) {
             case 'dust':
+                let updatedRight = false;
                 if( map[y][x].vy > 0 ){
                     map[y][x].vy--
                 } else if ( map[y][x].vy < 0 ){
@@ -167,64 +168,49 @@ let updateMap = (map)=>{
                 }
                 if(map[y+1] != undefined ){
                     if( map[y+1][x].denisty < map[y][x].denisty ){
-                        map[y][x].vy = 1
-                    } else if( map[y+1][x+1] != undefined) {
+                        map[y][x].vy += 1
+                    }
+                     if( map[y+1][x+1] != undefined) {
                         if(map[y+1][x+1].denisty < map[y][x].denisty){
-                            map[y][x].vy = 1
-                            map[y][x].vx = 1
-                        } else if( map[y+1][x-1] != undefined){
-                            if(map[y+1][x-1].denisty < map[y][x].denisty){
-                                map[y][x].vy = 1
-                                map[y][x].vx = -1
-                            }
+                            map[y][x].vy += 1
+                            map[y][x].vx += 1
+                            updatedRight = true
+                        }
+                    }
+                    if( map[y+1][x-1] != undefined & !updatedRight ){
+                        if(map[y+1][x-1].denisty < map[y][x].denisty){
+                            map[y][x].vy += 1
+                            map[y][x].vx += -1
                         }
                     }
                 } 
                 break;
             case 'fluid':
-
-                let updated = false
-                if( map[y][x].vy > 0 ){         //slowing down things
-                    map[y][x].vy--
-                } else if ( map[y][x].vy < 0 ){
-                    map[y][x].vy++
-                }
-                if( map[y][x].vx > 0 ){
-                    map[y][x].vx--
-                } else if ( map[y][x].vx < 0 ){
-                    map[y][x].vx++
-                }
-
-                if(map[y+1] != undefined & !updated ){
+                if(map[y+1] != undefined ){
                     if( map[y+1][x].denisty < map[y][x].denisty ){
                         map[y][x].vy = 1
-                        updated = true
                     }
-                    if( map[y+1][x+1] != undefined & !updated ){
+                    if( map[y+1][x+1] != undefined ){
                         if(map[y+1][x+1].denisty < map[y][x].denisty){
-                            map[y][x].vy = 1
-                            map[y][x].vx = 1
-                            updated = true
+                            map[y][x].vy += 1
+                            map[y][x].vx += 1
                         }
                     }
-                    if( map[y+1][x-1] != undefined & !updated ){
+                    if( map[y+1][x-1] != undefined ){
                         if(map[y+1][x-1].denisty < map[y][x].denisty){
-                            map[y][x].vy = 1
-                            map[y][x].vx = -1
-                            updated = true
+                            map[y][x].vy += 1
+                            map[y][x].vx += -1
                         }
                     }
                 }
-                if( map[y][x+1] != undefined & !updated ){
+                if( map[y][x+1] != undefined ){
                     if(map[y][x+1].denisty < map[y][x].denisty){
-                        map[y][x].vx = 1
-                        updated = true
+                        map[y][x].vx += 1
                     }
                 }
-                if( map[y][x-1] != undefined & !updated ){
+                if( map[y][x-1] != undefined ){
                     if(map[y][x-1].denisty < map[y][x].denisty){
-                        map[y][x].vx = -1
-                        updated = true
+                        map[y][x].vx += -1
                     }
                 }                
                 break;
