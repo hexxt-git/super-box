@@ -65,7 +65,8 @@ c.font = '10px monospace'
 let mouse = {
     x: width/2,
     y: height/2,
-    z: false
+    z: false,
+    size: 2,
 }
 canvas.addEventListener( 'mousemove', ( event)=>{
     mouse.x = event.x
@@ -74,9 +75,10 @@ canvas.addEventListener( 'mousemove', ( event)=>{
 canvas.addEventListener( 'mousedown', ()=>{
     mouse.z = true
 })
-canvas.addEventListener( 'mouseup', ()=>{
+window.addEventListener( 'mouseup', ()=>{
     mouse.z = false
 })
+
 
 let types = {
     air: {
@@ -98,9 +100,9 @@ let types = {
         updatable: true,
     },
     water: {
-        hueRange: [ 230, 240 ],
-        saturationRange: [ 50, 55 ],
-        lightnessRange: [ 35, 40 ],
+        hueRange: [ 233, 235 ],
+        saturationRange: [ 53, 55 ],
+        lightnessRange: [ 50, 50 ],
         alphaRange: [ 100, 100],
         denisty: 1,
         behaviour: 'fluid',
@@ -109,6 +111,15 @@ let types = {
     stone: {
         hueRange: [ 0, 0 ],
         saturationRange: [ 0, 0 ],
+        lightnessRange: [ 30, 40 ],
+        alphaRange: [ 100, 100],
+        denisty: 5,
+        behaviour: 'solid',
+        updatable: true,
+    },
+    plastic: {
+        hueRange: [ 0, 256 ],
+        saturationRange: [ 30, 70 ],
         lightnessRange: [ 30, 40 ],
         alphaRange: [ 100, 100],
         denisty: 5,
@@ -292,19 +303,23 @@ function loop(){
 //   --updates--
 
     currentMap = updateMap(currentMap)
-    cursor.x = mouse.x
-    cursor.y = mouse.y 
-    cursor.style = `hsl(${average(types[tool].hueRange)}, ${average(types[tool].saturationRange)}%, ${average(types[tool].lightnessRange)}%)`;
+    mouse.style = `hsl(${average(types[tool].hueRange)}, ${average(types[tool].saturationRange)}%, ${average(types[tool].lightnessRange)}%)`;
     if(mouse.z){
-        currentMap[Math.floor(cursor.y/res)][Math.floor(cursor.x/res)] = new Cell(tool)
+        for( let i = 0 ; i < mouse.size ; i++ ){
+            for( let a = 0 ; a < mouse.size ; a++ ){
+                if(currentMap[Math.floor(mouse.y/res)+i] == undefined ) continue
+                //if(rdm(5)) continue
+                currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] = new Cell(tool)
+            }
+        }
     }
 
 //   --rendering--
 
     c.clearRect( 0, 0, width, height)
     renderMap(currentMap)
-    c.fillStyle = cursor.style;
-    c.fillRect( Math.floor(cursor.x/res)*res, Math.floor(cursor.y/res)*res, res, res)
+    c.fillStyle = mouse.style;
+    c.fillRect( Math.floor(mouse.x/res)*res, Math.floor(mouse.y/res)*res, mouse.size*res, mouse.size*res)
 }
 
 let world = []
@@ -312,6 +327,7 @@ for( let y = 0 ; y < Math.round(height/res) ; y++ ){
     world.push([])
     for( let x = 0 ; x < Math.round(width/res) ; x++ ){
         world[y].push( new Cell(typesList[rdm(2)]))
+        if(rdm(1)) world[y][x] = new Cell('air')
     }
 }
 
@@ -326,11 +342,6 @@ for( let i in types ){
     })
 }
 
-let cursor = {
-    x: width/2,
-    y: height/2,
-    style: `white`,
-}
 
 let currentMap = world;
 loop()
