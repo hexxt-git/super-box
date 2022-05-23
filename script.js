@@ -87,8 +87,17 @@ let types = {
         lightnessRange: [ 0, 0 ],
         alphaRange: [ 0, 0 ],
         denisty: 0,
-        behaviour: 'air',
-        updatable: false,
+        behaviour: 'fluid',
+        updatable: true,
+    },
+    smoke: {
+        hueRange: [ 0, 0 ],
+        saturationRange: [ 0, 0 ],
+        lightnessRange: [ 80, 95 ],
+        alphaRange: [ 100, 100],
+        denisty: -1,
+        behaviour: 'fluid',
+        updatable: true,
     },
     sand: {
         hueRange: [ 25, 30 ],
@@ -202,10 +211,10 @@ let updateMap = (map)=>{
                 } 
                 break;
             case 'fluid':
-                let moved = false
+                moved = false
 
                 if( map[y][x].vy < -2 ) map[y][x].vy++
-                if( map[y][x].vy < -2 ) map[y][x].vy++
+                if( map[y][x].vx < -2 ) map[y][x].vx++
                 if( map[y][x].vy > +2 ) map[y][x].vy--
                 if( map[y][x].vx > +2 ) map[y][x].vx--
 
@@ -242,6 +251,42 @@ let updateMap = (map)=>{
                     }
                 }                
                 break;
+            case 'gas':
+                moved = false
+/*
+                if( map[y][x].vy < -2 ) map[y][x].vy++
+                if( map[y][x].vx < -2 ) map[y][x].vx++
+                if( map[y][x].vy > +2 ) map[y][x].vy--
+                if( map[y][x].vx > +2 ) map[y][x].vx--
+*/
+                map[y][x].vy = 1
+
+                if(map[y+1] != undefined ){
+                    if( map[y+1][x].denisty > map[y][x].denisty ){
+                        map[y][x].vy = 1
+                        moved = true
+                    }
+                    if( map[y+1][x+1] != undefined ){
+                        if(map[y+1][x+1].denisty > map[y][x].denisty ){
+                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                            moved = true
+                        }
+                    }
+                    if( map[y+1][x-1] != undefined ){
+                        if(map[y+1][x-1].denisty > map[y][x].denisty ){
+                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
+                            moved = true
+                        }
+                    }
+                }
+                if( map[y][x+1] != undefined ){
+                    if(map[y][x+1].denisty > map[y][x].denisty & !moved & rdm(1) ){
+                        if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                        moved = true
+                    }
+                }
             default:
                 break;
             }
@@ -308,7 +353,7 @@ function loop(){
         for( let i = 0 ; i < mouse.size ; i++ ){
             for( let a = 0 ; a < mouse.size ; a++ ){
                 if(currentMap[Math.floor(mouse.y/res)+i] == undefined ) continue
-                //if(rdm(5)) continue
+                if(currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] == undefined ) continue
                 currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] = new Cell(tool)
             }
         }
@@ -326,7 +371,7 @@ let world = []
 for( let y = 0 ; y < Math.round(height/res) ; y++ ){
     world.push([])
     for( let x = 0 ; x < Math.round(width/res) ; x++ ){
-        world[y].push( new Cell(typesList[rdm(2)]))
+        world[y].push( new Cell(typesList[rdm(3)]))
         if(rdm(1)) world[y][x] = new Cell('air')
     }
 }
