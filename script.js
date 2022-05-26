@@ -53,7 +53,6 @@ let height = $('container').clientHeight
 let stepsPerSecond = 60
 let res = 8
 let paused = false
-let maxVelocity = 4
 
 canvas.width = width
 canvas.height = height
@@ -66,7 +65,7 @@ let mouse = {
     x: width/2,
     y: height/2,
     z: false,
-    size: 2,
+    size: 4,
 }
 canvas.addEventListener( 'mousemove', ( event)=>{
     mouse.x = event.x
@@ -89,15 +88,21 @@ let types = {
         denisty: 0,
         behaviour: 'fluid',
         updatable: true,
+        maxVelocity: 3,
+        flameblity: 0,
+        maxAge: 0,
     },
     smoke: {
         hueRange: [ 0, 0 ],
         saturationRange: [ 0, 0 ],
-        lightnessRange: [ 80, 95 ],
+        lightnessRange: [ 75, 90 ],
         alphaRange: [ 100, 100],
         denisty: -1,
         behaviour: 'fluid',
         updatable: true,
+        maxVelocity: 3,
+        flameblity: 0,
+        maxAge: 100,
     },
     sand: {
         hueRange: [ 25, 30 ],
@@ -107,6 +112,9 @@ let types = {
         denisty: 2,
         behaviour: 'dust',
         updatable: true,
+        maxVelocity: 2,
+        flameblity: 0.1,
+        maxAge: 0,
     },
     water: {
         hueRange: [ 233, 235 ],
@@ -116,6 +124,21 @@ let types = {
         denisty: 1,
         behaviour: 'fluid',
         updatable: true,
+        maxVelocity: 3,
+        flameblity: 0,
+        maxAge: 0,
+    },
+    oil: {
+        hueRange: [ 100, 100 ],
+        saturationRange: [ 30, 32 ],
+        lightnessRange: [ 6, 7 ],
+        alphaRange: [ 100, 100],
+        denisty: 1,
+        behaviour: 'fluid',
+        updatable: true,
+        maxVelocity: 3,
+        flameblity: 1,
+        maxAge: 0,
     },
     stone: {
         hueRange: [ 0, 0 ],
@@ -124,7 +147,10 @@ let types = {
         alphaRange: [ 100, 100],
         denisty: 5,
         behaviour: 'solid',
-        updatable: true,
+        updatable: false,
+        maxVelocity: 2,
+        flameblity: 0,
+        maxAge: 0,
     },
     plastic: {
         hueRange: [ 0, 256 ],
@@ -133,7 +159,34 @@ let types = {
         alphaRange: [ 100, 100],
         denisty: 5,
         behaviour: 'solid',
-        updatable: true,
+        updatable: false,
+        maxVelocity: 2,
+        flameblity: 0,
+        maxAge: 0,
+    },
+    wood: {
+        hueRange: [ 25, 30 ],
+        saturationRange: [ 30, 35 ],
+        lightnessRange: [ 10, 13 ],
+        alphaRange: [ 100, 100],
+        denisty: 5,
+        behaviour: 'solid',
+        updatable: false,
+        maxVelocity: 2,
+        flameblity: 0.7,
+        maxAge: 0,
+    },
+    fire: {
+        hueRange: [ 0, 20 ],
+        saturationRange: [ 50, 60 ],
+        lightnessRange: [ 40, 50 ],
+        alphaRange: [ 100, 100],
+        denisty: -1,
+        behaviour: 'gas',
+        updatable: false,
+        maxVelocity: 2,
+        flameblity: 0,
+        maxAge: 10,
     },
 }
 let typesList = []
@@ -146,6 +199,8 @@ class Cell{
         this.vy = 0
         this.denisty = types[this.type].denisty
         this.behaviour = types[this.type].behaviour
+        this.maxVelocity = types[this.type].maxVelocity
+        this.flameblity = types[this.type].flameblity
         this.style = `hsla(
             ${random(types[this.type].hueRange[0],types[this.type].hueRange[1], 1)},
             ${random(types[this.type].saturationRange[0],types[this.type].saturationRange[1], 1)}%,
@@ -153,6 +208,8 @@ class Cell{
             ${random(types[this.type].alphaRange[0],types[this.type].alphaRange[1], 1)}%)`
         this.updatable = types[this.type].updatable
         this.updated = false
+        this.age = 0
+        this.maxAge = types[this.type].maxAge
     }
 }
 
@@ -169,11 +226,18 @@ let renderMap = (map)=>{
 
 let updateMap = (map)=>{
 
+    for( let y in map ){
+        for( let x in map[y] ){
+            map[y][x].updated = false
+            map[y][x].age++
+            if( map[y][x].age >= map[y][x].maxAge & map[y][x].maxAge != 0 ) map[y][x] = new Cell('air')
+        }
+    }
+
     let deltaMap = []  
     for ( let y in map ){
         deltaMap.push([])
         for ( let x in map[y] ){
-            map[y][x].updated = false
             deltaMap[y].push(map[y][x])
         }
     }
@@ -183,29 +247,29 @@ let updateMap = (map)=>{
         switch (map[y][x].behaviour) {
             case 'dust':
                 if( map[y][x].vy > 0 ){
-                    if(map[y][x].vy < maxVelocity )  map[y][x].vy += -1
+                    if(map[y][x].vy < map[y][x].maxVelocity )  map[y][x].vy += -1
                 } else if ( map[y][x].vy < 0 ){
-                    if(map[y][x].vy < maxVelocity )  map[y][x].vy += -1
+                    if(map[y][x].vy < map[y][x].maxVelocity )  map[y][x].vy += -1
                 }
                 if( map[y][x].vx > 0 ){
-                    if(map[y][x].vx < maxVelocity )  map[y][x].vx += -1
+                    if(map[y][x].vx < map[y][x].maxVelocity )  map[y][x].vx += -1
                 } else if ( map[y][x].vx < 0 ){
-                    if(map[y][x].vx < maxVelocity )  map[y][x].vx += 1
+                    if(map[y][x].vx < map[y][x].maxVelocity )  map[y][x].vx += 1
                 }
                 if(map[y+1] != undefined ){
                     if( map[y+1][x].denisty < map[y][x].denisty ){
-                        if(map[y][x].vy < maxVelocity )  map[y][x].vy += 1
+                        if(map[y][x].vy < map[y][x].maxVelocity )  map[y][x].vy += 1
                     }
                      if( map[y+1][x+1] != undefined) {
                         if(map[y+1][x+1].denisty < map[y][x].denisty){
-                            if(map[y][x].vy < maxVelocity )  map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity )  map[y][x].vx += 1
+                            if(map[y][x].vy < map[y][x].maxVelocity )  map[y][x].vy += 1
+                            if(map[y][x].vx < map[y][x].maxVelocity )  map[y][x].vx += 1
                         }
                     }
                     if( map[y+1][x-1] != undefined ){
                         if(map[y+1][x-1].denisty < map[y][x].denisty){
-                            if(map[y][x].vy < maxVelocity )  map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity )  map[y][x].vx += -1
+                            if(map[y][x].vy < map[y][x].maxVelocity )  map[y][x].vy += 1
+                            if(map[y][x].vx < map[y][x].maxVelocity )  map[y][x].vx += -1
                         }
                     }
                 } 
@@ -225,28 +289,28 @@ let updateMap = (map)=>{
                     }
                     if( map[y+1][x+1] != undefined ){
                         if(map[y+1][x+1].denisty < map[y][x].denisty ){
-                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                            if(map[y][x].vy < map[y][x].maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += 1
                             moved = true
                         }
                     }
                     if( map[y+1][x-1] != undefined ){
                         if(map[y+1][x-1].denisty < map[y][x].denisty ){
-                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
+                            if(map[y][x].vy < map[y][x].maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += -1
                             moved = true
                         }
                     }
                 }
                 if( map[y][x+1] != undefined ){
                     if(map[y][x+1].denisty < map[y][x].denisty & !moved & rdm(1) ){
-                        if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                        if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += 1
                         moved = true
                     }
                 }
                 if( map[y][x-1] != undefined ){
                     if(map[y][x-1].denisty < map[y][x].denisty & !moved ){
-                        if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
+                        if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += -1
                         moved = true
                     }
                 }                
@@ -268,30 +332,49 @@ let updateMap = (map)=>{
                     }
                     if( map[y+1][x+1] != undefined ){
                         if(map[y+1][x+1].denisty > map[y][x].denisty ){
-                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                            if(map[y][x].vy < map[y][x].maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += 1
                             moved = true
                         }
                     }
                     if( map[y+1][x-1] != undefined ){
                         if(map[y+1][x-1].denisty > map[y][x].denisty ){
-                            if(map[y][x].vy < maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < maxVelocity ) map[y][x].vx += -1
+                            if(map[y][x].vy < map[y][x].maxVelocity ) map[y][x].vy += 1
+                            if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += -1
                             moved = true
                         }
                     }
                 }
                 if( map[y][x+1] != undefined ){
                     if(map[y][x+1].denisty > map[y][x].denisty & !moved & rdm(1) ){
-                        if(map[y][x].vx < maxVelocity ) map[y][x].vx += 1
+                        if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += 1
                         moved = true
                     }
                 }
             default:
                 break;
             }
+            if ( map[y][x].type == 'fire' ){
+                if(map[y][x].strength <= 0 ){
+                    deltaMap[y][x] = new Cell('air')
+                }
+                deltaMap[y][x].strength += -1 
+                for( let fy = -1 ; fy <= 1 ; fy++){
+                    if(map[y+fy] == undefined ) continue
+                    for( let fx = -1 ; fx <= 1 ; fx++){
+                        if( fy == 0 & fx == 0 ) continue
+                        if(map[y+fy][x+fx] == undefined ) continue
+                        if(rdm(map[y+fy][x+fx].flameblity)){
+                            deltaMap[y][x].strength += -1 
+                            if(rdm(20)) deltaMap[y+fy][x+fx] = new Cell('fire')
+                            else deltaMap[y+fy][x+fx] = new Cell('smoke')
+                        }
+                    }
+                }
+            }
         }
     }
+    
 
     for ( let y = 0 ; y < map.length ; y++ ){       //moving based on the velocity
         for ( let x = 0 ; x < map[0].length ; x++ ){
@@ -371,12 +454,15 @@ let world = []
 for( let y = 0 ; y < Math.round(height/res) ; y++ ){
     world.push([])
     for( let x = 0 ; x < Math.round(width/res) ; x++ ){
-        world[y].push( new Cell(typesList[rdm(3)]))
-        if(rdm(1)) world[y][x] = new Cell('air')
+        //world[y].push( new Cell(typesList[rdm(3)]))
+        //if(rdm(1)) world[y][x] = new Cell('air')
+        world[y].push( new Cell(rdm(2)?'wood':'air'))
+        if( y == 45 ) world[y][x] = new Cell('fire')
+        //if( y == 46 ) world[y][x] = new Cell('stone')
     }
 }
 
-let tool = 'water'
+let tool = 'sand'
 for( let i in types ){
     $('materials').innerHTML += `<div class="selection" id="${i}-selector">${i}</div>`
     $(i+'-selector').style.background = `hsl(${average(types[i].hueRange)}, ${average(types[i].saturationRange)}%, ${average(types[i].lightnessRange)}%)`   
@@ -390,3 +476,4 @@ for( let i in types ){
 
 let currentMap = world;
 loop()
+
