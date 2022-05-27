@@ -513,8 +513,10 @@ $('save').addEventListener( 'click', ()=>{
 })
 $('load').addEventListener( 'click', ()=>{
     let slot = prompt('load from slot', 1)
-    cuurentMap = []
-    cuurentMap = eval(localStorage.getItem(slot))
+    if(eval(localStorage.getItem(slot)) != null ) currentMap = eval(localStorage.getItem(slot)) 
+})
+$('brushSize').addEventListener( 'click', ()=>{
+    mouse.size = prompt('brush size')
 })
 
 
