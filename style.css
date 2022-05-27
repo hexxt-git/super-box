@@ -34,7 +34,7 @@ body{
     background-color: #666;
     padding: 5px;
     text-align: center;
-    border: solid white 1px;
+    border-bottom: solid white 1px;
     cursor: default;
 }
 .selection-tab-list{
@@ -47,6 +47,8 @@ body{
     gap: 5px;
 }
 .selection{
-    border: solid white 1px;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #666;
 }
