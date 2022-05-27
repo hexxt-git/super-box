@@ -92,18 +92,6 @@ let types = {
         flameblity: 0,
         maxAge: 0,
     },
-    smoke: {
-        hueRange: [ 0, 0 ],
-        saturationRange: [ 0, 0 ],
-        lightnessRange: [ 75, 90 ],
-        alphaRange: [ 100, 100],
-        denisty: -1,
-        behaviour: 'fluid',
-        updatable: true,
-        maxVelocity: 3,
-        flameblity: 0,
-        maxAge: 100,
-    },
     sand: {
         hueRange: [ 25, 30 ],
         saturationRange: [ 50, 60 ],
@@ -127,6 +115,18 @@ let types = {
         maxVelocity: 3,
         flameblity: 0,
         maxAge: 0,
+    },
+    smoke: {
+        hueRange: [ 0, 0 ],
+        saturationRange: [ 0, 0 ],
+        lightnessRange: [ 75, 90 ],
+        alphaRange: [ 100, 100],
+        denisty: -1,
+        behaviour: 'fluid',
+        updatable: true,
+        maxVelocity: 3,
+        flameblity: 0,
+        maxAge: 100,
     },
     oil: {
         hueRange: [ 100, 100 ],
@@ -454,10 +454,10 @@ let world = []
 for( let y = 0 ; y < Math.round(height/res) ; y++ ){
     world.push([])
     for( let x = 0 ; x < Math.round(width/res) ; x++ ){
-        //world[y].push( new Cell(typesList[rdm(3)]))
-        //if(rdm(1)) world[y][x] = new Cell('air')
-        world[y].push( new Cell(rdm(2)?'wood':'air'))
-        if( y == 45 ) world[y][x] = new Cell('fire')
+        world[y].push( new Cell(typesList[rdm(2)]))
+        if(rdm(1)) world[y][x] = new Cell('air')
+        //world[y].push( new Cell(rdm(2)?'wood':'air'))
+        //if( y == 45 ) world[y][x] = new Cell('fire')
         //if( y == 46 ) world[y][x] = new Cell('stone')
     }
 }
@@ -476,4 +476,54 @@ for( let i in types ){
 
 let currentMap = world;
 loop()
+
+
+
+
+
+$('pause').addEventListener( 'click', ()=>{
+    pause()
+})
+$('play').addEventListener( 'click', ()=>{
+    play()
+})
+$('clear').addEventListener( 'click', ()=>{
+    let empty = []
+    for( let y = 0 ; y < Math.round(height/res) ; y++ ){
+        empty.push([])
+        for( let x = 0 ; x < Math.round(width/res) ; x++ ){
+            empty[y].push( new Cell('air'))
+        }
+    }
+    currentMap = empty
+})
+$('randomize').addEventListener( 'click', ()=>{
+    let random = []
+    for( let y = 0 ; y < Math.round(height/res) ; y++ ){
+        random.push([])
+        for( let x = 0 ; x < Math.round(width/res) ; x++ ){
+            random[y].push( new Cell(typesList[rdm(typesList.length-1)]))
+        }
+    }
+    currentMap = random
+})
+$('save').addEventListener( 'click', ()=>{
+    let slot = prompt('save to slot', 1)
+    localStorage.setItem( slot, JSON.stringify(currentMap))
+})
+$('load').addEventListener( 'click', ()=>{
+    let slot = prompt('load from slot', 1)
+    cuurentMap = []
+    cuurentMap = eval(localStorage.getItem(slot))
+})
+
+
+
+
+
+
+
+
+
+
 
