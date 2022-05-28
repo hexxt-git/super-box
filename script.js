@@ -87,6 +87,7 @@ let types = {
         alphaRange: [ 0, 0 ],
         density: 0,
         behaviour: 'fluid',
+        spawns: 'air',
         updatable: true,
         maxVelocity: 3,
         flameblity: 0,
@@ -99,8 +100,22 @@ let types = {
         alphaRange: [ 100, 100],
         density: 2,
         behaviour: 'dust',
+        spawns: 'air',
         updatable: true,
         maxVelocity: 2,
+        flameblity: 0,
+        maxAge: 0,
+    },
+    sandGenerator: {
+        hueRange: [ 25, 30 ],
+        saturationRange: [ 50, 60 ],
+        lightnessRange: [ 35, 40 ],
+        alphaRange: [ 100, 100],
+        density: 5,
+        behaviour: 'generator',
+        spawns: 'sand',
+        updatable:true,
+        maxVelocity:00,
         flameblity: 0,
         maxAge: 0,
     },
@@ -111,6 +126,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 2.5,
         behaviour: 'dust',
+        spawns: 'air',
         updatable: true,
         maxVelocity: 2,
         flameblity: 0,
@@ -123,8 +139,22 @@ let types = {
         alphaRange: [ 100, 100],
         density: 1,
         behaviour: 'fluid',
+        spawns: 'air',
         updatable: true,
         maxVelocity: 3,
+        flameblity: 0,
+        maxAge: 0,
+    },
+    waterGenerator: {
+        hueRange: [ 233, 235 ],
+        saturationRange: [ 53, 55 ],
+        lightnessRange: [ 30, 32 ],
+        alphaRange: [ 100, 100],
+        density: 5,
+        behaviour: 'generator',
+        spawns: 'water',
+        updatable: true,
+        maxVelocity: 0,
         flameblity: 0,
         maxAge: 0,
     },
@@ -135,6 +165,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: -1,
         behaviour: 'fluid',
+        spawns: 'air',
         updatable: true,
         maxVelocity: 3,
         flameblity: 0,
@@ -145,8 +176,9 @@ let types = {
         saturationRange: [ 30, 32 ],
         lightnessRange: [ 6, 7 ],
         alphaRange: [ 100, 100],
-        density: 1.5,
+        density: 8,
         behaviour: 'fluid',
+        spawns: 'air',
         updatable: true,
         maxVelocity: 3,
         flameblity: 1,
@@ -159,6 +191,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 5,
         behaviour: 'solid',
+        spawns: 'air',
         updatable: false,
         maxVelocity: 2,
         flameblity: 0,
@@ -171,6 +204,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 5,
         behaviour: 'solid',
+        spawns: 'air',
         updatable: false,
         maxVelocity: 2,
         flameblity: 0,
@@ -183,6 +217,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 5,
         behaviour: 'solid',
+        spawns: 'air',
         updatable: false,
         maxVelocity: 2,
         flameblity: 0.7,
@@ -195,6 +230,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 5,
         behaviour: 'solid',
+        spawns: 'air',
         updatable: false,
         maxVelocity: 2,
         flameblity: 0.7,
@@ -207,10 +243,24 @@ let types = {
         alphaRange: [ 100, 100],
         density: -1,
         behaviour: 'gas',
-        updatable: false,
+        spawns: 'air',
+        updatable: true,
         maxVelocity: 2,
         flameblity: 0,
         maxAge: 10,
+    },
+    fireGenerator: {
+        hueRange: [ 0, 15 ],
+        saturationRange: [ 40, 45 ],
+        lightnessRange: [ 35, 40 ],
+        alphaRange: [ 100, 100],
+        density: 5,
+        behaviour: 'generator',
+        spawns: 'fire',
+        updatable:true,
+        maxVelocity:02,
+        flameblity: 0,
+        maxAge: 0,
     },
 }
 let typesList = []
@@ -225,6 +275,7 @@ class Cell{
         this.behaviour = types[this.type].behaviour
         this.maxVelocity = types[this.type].maxVelocity
         this.flameblity = types[this.type].flameblity
+        this.spawns = types[this.type].spawns
         this.style = `hsla(${random(types[this.type].hueRange[0],types[this.type].hueRange[1], 1)},${random(types[this.type].saturationRange[0],types[this.type].saturationRange[1], 1)}%,${random(types[this.type].lightnessRange[0],types[this.type].lightnessRange[1], 1)}%,${random(types[this.type].alphaRange[0],types[this.type].alphaRange[1], 1)}%)`
         this.updatable = types[this.type].updatable
         this.updated = false
@@ -371,6 +422,12 @@ let updateMap = (map)=>{
                         moved = true
                     }
                 }
+            case 'generator':
+                if( map[y][x+1] == undefined ) continue
+                if(map[y][x+1].behaviour == 'generator') continue
+                map[y][x+1] = new Cell(map[y][x].spawns)
+
+                break
             default:
                 break;
             }
