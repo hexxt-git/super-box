@@ -531,8 +531,26 @@ $('brushSize').addEventListener( 'click', ()=>{
 $('brushDensity').addEventListener( 'click', ()=>{
     mouse.density = prompt('brush density \n(0 for 100%)')
 })
-
-
+$('save').addEventListener( 'click', ()=>{
+    let saveMap = []
+    for ( let y in currentMap ){
+        saveMap.push([])
+        for ( let x in currentMap[y] ){
+            saveMap[y].push(currentMap[y][x].type)
+        }
+    }
+    localStorage.setItem( prompt('save to slot'), JSON.stringify(saveMap))
+})
+$('load').addEventListener( 'click', ()=>{
+    let loadMap = eval(localStorage.getItem(prompt('load from slot', 1)))
+    currentMap = []
+    for ( let y in loadMap ){
+        currentMap.push([])
+        for ( let x in loadMap[y] ){
+            currentMap[y].push( new Cell(loadMap[y][x]))
+        }
+    }
+})
 
 
 
