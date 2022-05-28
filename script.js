@@ -28,7 +28,6 @@ function pause (){
 };
 function play (){
     paused = false
-    loop()
 };
 function average( values ){
     return Math.floor(( values[0] + values[1] ) / 2)
@@ -443,15 +442,13 @@ function loop(){
 //     --loop--
 
     setTimeout(() => {
-        if ( !paused ){
         requestAnimationFrame(loop)
-        }
     }, 1000 / stepsPerSecond);
     step++
 
 //   --updates--
 
-    currentMap = updateMap(currentMap)
+    if ( !paused ) currentMap = updateMap(currentMap)
     mouse.style = `hsl(${average(types[tool].hueRange)}, ${average(types[tool].saturationRange)}%, ${average(types[tool].lightnessRange)}%)`;
     if(mouse.z){
         for( let i = 0 ; i < mouse.size ; i++ ){
