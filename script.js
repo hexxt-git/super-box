@@ -118,7 +118,7 @@ let types = {
         saturationRange: [ 50, 60 ],
         lightnessRange: [ 35, 40 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'generator',
         spawns: 'sand',
         updatable:true,
@@ -166,7 +166,7 @@ let types = {
         saturationRange: [ 53, 55 ],
         lightnessRange: [ 30, 32 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'generator',
         spawns: 'water',
         updatable: true,
@@ -182,7 +182,7 @@ let types = {
         saturationRange: [ 0, 0 ],
         lightnessRange: [ 75, 90 ],
         alphaRange: [ 100, 100],
-        density: -1,
+        density: -0.5,
         behaviour: 'fluid',
         spawns: 'air',
         updatable: true,
@@ -208,29 +208,45 @@ let types = {
         diesTo: 'air',
         chanceToDieTo: 1,
     },
+    oilGenerator: {
+        displayName: 'oil generator',
+        hueRange: [ 100, 100 ],
+        saturationRange: [ 30, 32 ],
+        lightnessRange: [ 3, 4 ],
+        alphaRange: [ 100, 100],
+        density: 1000,
+        behaviour: 'generator',
+        spawns: 'oil',
+        updatable: false,
+        maxVelocity:00,
+        flameblity: 0,
+        maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
+    },
     stone: {
         displayName: 'stone',
         hueRange: [ 0, 0 ],
         saturationRange: [ 0, 0 ],
         lightnessRange: [ 30, 40 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'solid',
         spawns: 'air',
         updatable: false,
-        maxVelocity: 2,
-        flameblity: 0,
+        maxVelocity: 0,
+        flameblity: 0.01,
         maxAge: 0,
         diesTo: 'air',
         chanceToDieTo: 1,
     },
     plastic: {
-            displayName: 'plastic',
+        displayName: 'plastic',
         hueRange: [ 0, 256 ],
         saturationRange: [ 30, 70 ],
         lightnessRange: [ 30, 40 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'solid',
         spawns: 'air',
         updatable: false,
@@ -246,7 +262,7 @@ let types = {
         saturationRange: [ 30, 35 ],
         lightnessRange: [ 10, 13 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'solid',
         spawns: 'air',
         updatable: false,
@@ -262,7 +278,7 @@ let types = {
         saturationRange: [ 40, 45 ],
         lightnessRange: [ 35, 40 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'solid',
         spawns: 'air',
         updatable: false,
@@ -294,7 +310,7 @@ let types = {
         saturationRange: [ 40, 45 ],
         lightnessRange: [ 35, 40 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'generator',
         spawns: 'fire',
         updatable:true,
@@ -326,7 +342,7 @@ let types = {
         saturationRange: [ 53, 55 ],
         lightnessRange: [ 30, 30 ],
         alphaRange: [ 100, 100],
-        density: 5,
+        density: 100,
         behaviour: 'generator',
         spawns: 'lava',
         updatable:true,
@@ -380,6 +396,8 @@ let updateMap = (map)=>{
             if( map[y][x].age >= map[y][x].maxAge & map[y][x].maxAge != 0 ){
                 if(rdm(map[y][x].chanceToDieTo)){
                     map[y][x] = new Cell(map[y][x].diesTo)
+                } else {
+                    map[y][x] = new Cell('air')
                 }
             }
         }
@@ -505,31 +523,31 @@ let updateMap = (map)=>{
             case 'generator':
                 if( map[y][x+1] != undefined ){
                     if(map[y][x+1].behaviour != 'generator' ){
-                        if(deltaMap[y][x+1].type == 'air'){
+//                        if(deltaMap[y][x+1].type == 'air'){
                             deltaMap[y][x+1] = new Cell(map[y][x].spawns)
                         }
-                    }
+//                    }
                 }
                 if( map[y][x-1] != undefined ){
                     if(map[y][x-1].behaviour != 'generator' ){
-                        if(deltaMap[y][x-1].type == 'air'){
+//                        if(deltaMap[y][x-1].type == 'air'){
                             deltaMap[y][x-1] = new Cell(map[y][x].spawns)
                         }
-                    }
+//                    }
                 }
                 if( map[y+1] != undefined ){
                     if(map[y+1][x].behaviour != 'generator' ){
-                        if(deltaMap[y+1][x].type == 'air'){
+//                        if(deltaMap[y+1][x].type == 'air'){
                             deltaMap[y+1][x] = new Cell(map[y][x].spawns)
                         }
-                    }
+//                    }
                 }
                 if( map[y-1] != undefined ){
                     if(map[y-1][x].behaviour != 'generator' ){
-                        if(deltaMap[y-1][x].type == 'air'){
+//                        if(deltaMap[y-1][x].type == 'air'){
                             deltaMap[y-1][x] = new Cell(map[y][x].spawns)
                         }
-                    }
+//                    }
                 }
 
                 break
@@ -617,14 +635,14 @@ function loop(){
 //   --updates--
 
     if ( !paused ) currentMap = updateMap(currentMap)
-    mouse.style = `hsl(${average(types[tool].hueRange)}, ${average(types[tool].saturationRange)}%, ${average(types[tool].lightnessRange)}%)`;
+    mouse.style = `hsl(${average(types[material].hueRange)}, ${average(types[material].saturationRange)}%, ${average(types[material].lightnessRange)}%)`;
     if(mouse.z){
         for( let i = 0 ; i < mouse.size ; i++ ){
             for( let a = 0 ; a < mouse.size ; a++ ){
                 if(currentMap[Math.floor(mouse.y/res)+i] == undefined ) continue
                 if(currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] == undefined ) continue
-                if( mouse.density == 0 ) currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] = new Cell(tool)
-                else if(rdm(1/mouse.density) == 0) currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] = new Cell(tool)
+                if( mouse.density == 0 ) currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] = new Cell(material)
+                else if(rdm(1/mouse.density) == 0) currentMap[Math.floor(mouse.y/res)+i][Math.floor(mouse.x/res)+a] = new Cell(material)
             }
         }
     }
@@ -648,14 +666,16 @@ for( let y = 0 ; y < Math.round(height/res) ; y++ ){
     }
 }
 
-let tool = 'sand'
+let material = 'sand'
 for( let i in types ){
+    if(i=='air') continue
     $('materials').innerHTML += `<div class="selection" id="${i}-selector">${types[i].displayName}</div>`
     $(i+'-selector').style.background = `hsl(${average(types[i].hueRange)}, ${average(types[i].saturationRange)}%, ${average(types[i].lightnessRange)}%)`   
 }
 for( let i in types ){
+    if(i=='air') continue
     $(i+'-selector').addEventListener('click', ()=>{
-        tool = i
+        material = i
     })
 }
 
