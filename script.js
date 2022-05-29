@@ -81,6 +81,7 @@ window.addEventListener( 'mouseup', ()=>{
 
 let types = {
     air: {
+        displayName: 'air',
         hueRange: [ 0, 0 ],
         saturationRange: [ 0, 0 ],
         lightnessRange: [ 0, 0 ],
@@ -92,8 +93,11 @@ let types = {
         maxVelocity: 3,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     sand: {
+        displayName: 'sand',
         hueRange: [ 25, 30 ],
         saturationRange: [ 50, 60 ],
         lightnessRange: [ 45, 50 ],
@@ -105,8 +109,11 @@ let types = {
         maxVelocity: 2,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     sandGenerator: {
+            displayName: 'sand generator',
         hueRange: [ 25, 30 ],
         saturationRange: [ 50, 60 ],
         lightnessRange: [ 35, 40 ],
@@ -118,8 +125,11 @@ let types = {
         maxVelocity:00,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     dirt: {
+        displayName: 'dirt',
         hueRange: [ 20, 25 ],
         saturationRange: [ 40, 45 ],
         lightnessRange: [ 15, 19 ],
@@ -131,8 +141,11 @@ let types = {
         maxVelocity: 2,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     water: {
+        displayName: 'water',
         hueRange: [ 233, 235 ],
         saturationRange: [ 53, 55 ],
         lightnessRange: [ 50, 50 ],
@@ -144,8 +157,11 @@ let types = {
         maxVelocity: 3,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     waterGenerator: {
+            displayName: 'water generator',
         hueRange: [ 233, 235 ],
         saturationRange: [ 53, 55 ],
         lightnessRange: [ 30, 32 ],
@@ -157,8 +173,11 @@ let types = {
         maxVelocity: 0,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     smoke: {
+        displayName: 'smoke',
         hueRange: [ 0, 0 ],
         saturationRange: [ 0, 0 ],
         lightnessRange: [ 75, 90 ],
@@ -170,8 +189,11 @@ let types = {
         maxVelocity: 3,
         flameblity: 0,
         maxAge: 100,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     oil: {
+        displayName: 'oil',
         hueRange: [ 100, 100 ],
         saturationRange: [ 30, 32 ],
         lightnessRange: [ 6, 7 ],
@@ -183,8 +205,11 @@ let types = {
         maxVelocity: 3,
         flameblity: 1,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     stone: {
+        displayName: 'stone',
         hueRange: [ 0, 0 ],
         saturationRange: [ 0, 0 ],
         lightnessRange: [ 30, 40 ],
@@ -196,8 +221,11 @@ let types = {
         maxVelocity: 2,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     plastic: {
+            displayName: 'plastic',
         hueRange: [ 0, 256 ],
         saturationRange: [ 30, 70 ],
         lightnessRange: [ 30, 40 ],
@@ -209,8 +237,11 @@ let types = {
         maxVelocity: 2,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     wood: {
+        displayName: 'wood',
         hueRange: [ 25, 30 ],
         saturationRange: [ 30, 35 ],
         lightnessRange: [ 10, 13 ],
@@ -222,8 +253,11 @@ let types = {
         maxVelocity: 2,
         flameblity: 0.7,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     leaf: {
+        displayName: 'leaf',
         hueRange: [ 130, 140 ],
         saturationRange: [ 40, 45 ],
         lightnessRange: [ 35, 40 ],
@@ -235,8 +269,11 @@ let types = {
         maxVelocity: 2,
         flameblity: 0.7,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
     fire: {
+        displayName: 'fire',
         hueRange: [ 0, 20 ],
         saturationRange: [ 50, 60 ],
         lightnessRange: [ 40, 50 ],
@@ -248,8 +285,11 @@ let types = {
         maxVelocity: 2,
         flameblity: 0,
         maxAge: 10,
+        diesTo: 'smoke',
+        chanceToDieTo: 0.5,
     },
     fireGenerator: {
+        displayName: 'fire generator',
         hueRange: [ 0, 15 ],
         saturationRange: [ 40, 45 ],
         lightnessRange: [ 35, 40 ],
@@ -258,9 +298,43 @@ let types = {
         behaviour: 'generator',
         spawns: 'fire',
         updatable:true,
-        maxVelocity:02,
+        maxVelocity: 0,
         flameblity: 0,
         maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
+    },
+    lava: {
+        displayName: 'lava',
+        hueRange: [ 0, 50 ],
+        saturationRange: [ 53, 55 ],
+        lightnessRange: [ 50, 50 ],
+        alphaRange: [ 100, 100],
+        density: 1,
+        behaviour: 'fluid',
+        spawns: 'water',
+        updatable: true,
+        maxVelocity: 3,
+        flameblity: 0,
+        maxAge: 1000,
+        diesTo: 'stone',
+        chanceToDieTo: 1,
+    },
+    lavaGenerator: {
+        displayName: 'lava generator',
+        hueRange: [ 0, 50 ],
+        saturationRange: [ 53, 55 ],
+        lightnessRange: [ 30, 30 ],
+        alphaRange: [ 100, 100],
+        density: 5,
+        behaviour: 'generator',
+        spawns: 'lava',
+        updatable:true,
+        maxVelocity: 0,
+        flameblity: 0,
+        maxAge: 0,
+        diesTo: 'air',
+        chanceToDieTo: 1,
     },
 }
 let typesList = []
@@ -281,6 +355,8 @@ class Cell{
         this.updated = false
         this.age = 0
         this.maxAge = types[this.type].maxAge
+        this.diesTo = types[this.type].diesTo
+        this.chanceToDieTo = types[this.type].chanceToDieTo
     }
 }
 
@@ -300,8 +376,12 @@ let updateMap = (map)=>{
     for( let y in map ){
         for( let x in map[y] ){
             map[y][x].updated = false
-            map[y][x].age++
-            if( map[y][x].age >= map[y][x].maxAge & map[y][x].maxAge != 0 ) map[y][x] = new Cell('air')
+            map[y][x].age += 1
+            if( map[y][x].age >= map[y][x].maxAge & map[y][x].maxAge != 0 ){
+                if(rdm(map[y][x].chanceToDieTo)){
+                    map[y][x] = new Cell(map[y][x].diesTo)
+                }
+            }
         }
     }
 
@@ -423,28 +503,59 @@ let updateMap = (map)=>{
                     }
                 }
             case 'generator':
-                if( map[y][x+1] == undefined ) continue
-                if(map[y][x+1].behaviour == 'generator') continue
-                map[y][x+1] = new Cell(map[y][x].spawns)
+                if( map[y][x+1] != undefined ){
+                    if(map[y][x+1].behaviour != 'generator' ){
+                        if(deltaMap[y][x+1].type == 'air'){
+                            deltaMap[y][x+1] = new Cell(map[y][x].spawns)
+                        }
+                    }
+                }
+                if( map[y][x-1] != undefined ){
+                    if(map[y][x-1].behaviour != 'generator' ){
+                        if(deltaMap[y][x-1].type == 'air'){
+                            deltaMap[y][x-1] = new Cell(map[y][x].spawns)
+                        }
+                    }
+                }
+                if( map[y+1] != undefined ){
+                    if(map[y+1][x].behaviour != 'generator' ){
+                        if(deltaMap[y+1][x].type == 'air'){
+                            deltaMap[y+1][x] = new Cell(map[y][x].spawns)
+                        }
+                    }
+                }
+                if( map[y-1] != undefined ){
+                    if(map[y-1][x].behaviour != 'generator' ){
+                        if(deltaMap[y-1][x].type == 'air'){
+                            deltaMap[y-1][x] = new Cell(map[y][x].spawns)
+                        }
+                    }
+                }
 
                 break
             default:
                 break;
             }
             if ( map[y][x].type == 'fire' ){
-                if(map[y][x].strength <= 0 ){
-                    deltaMap[y][x] = new Cell('air')
-                }
-                deltaMap[y][x].strength += -1 
                 for( let fy = -1 ; fy <= 1 ; fy++){
                     if(map[y+fy] == undefined ) continue
                     for( let fx = -1 ; fx <= 1 ; fx++){
                         if( fy == 0 & fx == 0 ) continue
                         if(map[y+fy][x+fx] == undefined ) continue
                         if(rdm(map[y+fy][x+fx].flameblity)){
-                            deltaMap[y][x].strength += -1 
                             if(rdm(20)) deltaMap[y+fy][x+fx] = new Cell('fire')
-                            else deltaMap[y+fy][x+fx] = new Cell('smoke')
+                        }
+                    }
+                }
+            }
+            if ( map[y][x].type == 'lava' ){
+                for( let fy = -1 ; fy <= 1 ; fy++){
+                    if(map[y+fy] == undefined ) continue
+                    for( let fx = -1 ; fx <= 1 ; fx++){
+                        if( fy == 0 & fx == 0 ) continue
+                        if(map[y+fy][x+fx] == undefined ) continue
+                        if(map[y+fy][x+fx].type == 'water'){
+                            deltaMap[y][x] = new Cell('stone')
                         }
                     }
                 }
@@ -539,7 +650,7 @@ for( let y = 0 ; y < Math.round(height/res) ; y++ ){
 
 let tool = 'sand'
 for( let i in types ){
-    $('materials').innerHTML += `<div class="selection" id="${i}-selector">${i}</div>`
+    $('materials').innerHTML += `<div class="selection" id="${i}-selector">${types[i].displayName}</div>`
     $(i+'-selector').style.background = `hsl(${average(types[i].hueRange)}, ${average(types[i].saturationRange)}%, ${average(types[i].lightnessRange)}%)`   
 }
 for( let i in types ){
