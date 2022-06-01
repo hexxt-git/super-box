@@ -88,7 +88,7 @@ let types = {
         alphaRange: [ 0, 0 ],
         density: 0,
         behaviour: 'fluid',
-        spawns: 'air',
+        generates: 'air',
         updatable: true,
         maxVelocity: 3,
         flameblity: 0,
@@ -104,7 +104,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 2,
         behaviour: 'dust',
-        spawns: 'air',
+        generates: 'air',
         updatable: true,
         maxVelocity: 2,
         flameblity: 0,
@@ -120,7 +120,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'generator',
-        spawns: 'sand',
+        generates: 'sand',
         updatable:true,
         maxVelocity:00,
         flameblity: 0,
@@ -136,7 +136,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 2.5,
         behaviour: 'dust',
-        spawns: 'air',
+        generates: 'air',
         updatable: true,
         maxVelocity: 2,
         flameblity: 0,
@@ -152,7 +152,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 1,
         behaviour: 'fluid',
-        spawns: 'air',
+        generates: 'air',
         updatable: true,
         maxVelocity: 3,
         flameblity: 0,
@@ -168,7 +168,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'generator',
-        spawns: 'water',
+        generates: 'water',
         updatable: true,
         maxVelocity: 0,
         flameblity: 0,
@@ -184,7 +184,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: -0.5,
         behaviour: 'fluid',
-        spawns: 'air',
+        generates: 'air',
         updatable: true,
         maxVelocity: 3,
         flameblity: 0,
@@ -200,10 +200,10 @@ let types = {
         alphaRange: [ 100, 100],
         density: 8,
         behaviour: 'fluid',
-        spawns: 'air',
+        generates: 'air',
         updatable: true,
         maxVelocity: 3,
-        flameblity: 1,
+        flameblity: 2,
         maxAge: 0,
         diesTo: 'air',
         chanceToDieTo: 1,
@@ -216,7 +216,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 1000,
         behaviour: 'generator',
-        spawns: 'oil',
+        generates: 'oil',
         updatable: false,
         maxVelocity:00,
         flameblity: 0,
@@ -232,10 +232,10 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'solid',
-        spawns: 'air',
+        generates: 'air',
         updatable: false,
         maxVelocity: 0,
-        flameblity: 0.01,
+        flameblity: 0.005,
         maxAge: 0,
         diesTo: 'air',
         chanceToDieTo: 1,
@@ -248,7 +248,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'solid',
-        spawns: 'air',
+        generates: 'air',
         updatable: false,
         maxVelocity: 2,
         flameblity: 0,
@@ -264,7 +264,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'solid',
-        spawns: 'air',
+        generates: 'air',
         updatable: false,
         maxVelocity: 2,
         flameblity: 0.7,
@@ -280,7 +280,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'solid',
-        spawns: 'air',
+        generates: 'air',
         updatable: false,
         maxVelocity: 2,
         flameblity: 0.7,
@@ -295,8 +295,8 @@ let types = {
         lightnessRange: [ 40, 50 ],
         alphaRange: [ 100, 100],
         density: -1,
-        behaviour: 'gas',
-        spawns: 'air',
+        behaviour: 'fluid',
+        generates: 'air',
         updatable: true,
         maxVelocity: 2,
         flameblity: 0,
@@ -312,7 +312,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'generator',
-        spawns: 'fire',
+        generates: 'fire',
         updatable:true,
         maxVelocity: 0,
         flameblity: 0,
@@ -328,7 +328,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 1,
         behaviour: 'fluid',
-        spawns: 'water',
+        generates: 'water',
         updatable: true,
         maxVelocity: 3,
         flameblity: 0,
@@ -344,7 +344,7 @@ let types = {
         alphaRange: [ 100, 100],
         density: 100,
         behaviour: 'generator',
-        spawns: 'lava',
+        generates: 'lava',
         updatable:true,
         maxVelocity: 0,
         flameblity: 0,
@@ -365,7 +365,7 @@ class Cell{
         this.behaviour = types[this.type].behaviour
         this.maxVelocity = types[this.type].maxVelocity
         this.flameblity = types[this.type].flameblity
-        this.spawns = types[this.type].spawns
+        this.generates = types[this.type].generates
         this.style = `hsla(${random(types[this.type].hueRange[0],types[this.type].hueRange[1], 1)},${random(types[this.type].saturationRange[0],types[this.type].saturationRange[1], 1)}%,${random(types[this.type].lightnessRange[0],types[this.type].lightnessRange[1], 1)}%,${random(types[this.type].alphaRange[0],types[this.type].alphaRange[1], 1)}%)`
         this.updatable = types[this.type].updatable
         this.updated = false
@@ -484,68 +484,32 @@ let updateMap = (map)=>{
                     }
                 }                
                 break;
-            case 'gas':
-                moved = false
-/*
-                if( map[y][x].vy < -2 ) map[y][x].vy++
-                if( map[y][x].vx < -2 ) map[y][x].vx++
-                if( map[y][x].vy > +2 ) map[y][x].vy--
-                if( map[y][x].vx > +2 ) map[y][x].vx--
-*/
-                map[y][x].vy = 1
-
-                if(map[y+1] != undefined ){
-                    if( map[y+1][x].density > map[y][x].density ){
-                        map[y][x].vy = 1
-                        moved = true
-                    }
-                    if( map[y+1][x+1] != undefined ){
-                        if(map[y+1][x+1].density > map[y][x].density ){
-                            if(map[y][x].vy < map[y][x].maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += 1
-                            moved = true
-                        }
-                    }
-                    if( map[y+1][x-1] != undefined ){
-                        if(map[y+1][x-1].density > map[y][x].density ){
-                            if(map[y][x].vy < map[y][x].maxVelocity ) map[y][x].vy += 1
-                            if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += -1
-                            moved = true
-                        }
-                    }
-                }
-                if( map[y][x+1] != undefined ){
-                    if(map[y][x+1].density > map[y][x].density & !moved & rdm(1) ){
-                        if(map[y][x].vx < map[y][x].maxVelocity ) map[y][x].vx += 1
-                        moved = true
-                    }
-                }
             case 'generator':
                 if( map[y][x+1] != undefined ){
                     if(map[y][x+1].behaviour != 'generator' ){
 //                        if(deltaMap[y][x+1].type == 'air'){
-                            deltaMap[y][x+1] = new Cell(map[y][x].spawns)
+                            deltaMap[y][x+1] = new Cell(map[y][x].generates)
                         }
 //                    }
                 }
                 if( map[y][x-1] != undefined ){
                     if(map[y][x-1].behaviour != 'generator' ){
 //                        if(deltaMap[y][x-1].type == 'air'){
-                            deltaMap[y][x-1] = new Cell(map[y][x].spawns)
+                            deltaMap[y][x-1] = new Cell(map[y][x].generates)
                         }
 //                    }
                 }
                 if( map[y+1] != undefined ){
                     if(map[y+1][x].behaviour != 'generator' ){
 //                        if(deltaMap[y+1][x].type == 'air'){
-                            deltaMap[y+1][x] = new Cell(map[y][x].spawns)
+                            deltaMap[y+1][x] = new Cell(map[y][x].generates)
                         }
 //                    }
                 }
                 if( map[y-1] != undefined ){
                     if(map[y-1][x].behaviour != 'generator' ){
 //                        if(deltaMap[y-1][x].type == 'air'){
-                            deltaMap[y-1][x] = new Cell(map[y][x].spawns)
+                            deltaMap[y-1][x] = new Cell(map[y][x].generates)
                         }
 //                    }
                 }
@@ -560,8 +524,8 @@ let updateMap = (map)=>{
                     for( let fx = -1 ; fx <= 1 ; fx++){
                         if( fy == 0 & fx == 0 ) continue
                         if(map[y+fy][x+fx] == undefined ) continue
-                        if(rdm(map[y+fy][x+fx].flameblity)){
-                            if(rdm(20)) deltaMap[y+fy][x+fx] = new Cell('fire')
+                        if(rdm(map[y+fy][x+fx].flameblity) & rdm(5) ){
+                            deltaMap[y+fy][x+fx] = new Cell('fire')
                         }
                     }
                 }
