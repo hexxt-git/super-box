@@ -49,8 +49,8 @@ let canvas = $('canvas')
 let c = canvas.getContext('2d')
 let width = $('container').clientWidth
 let height = $('container').clientHeight
-let stepsPerSecond = 60
-let res = 8
+let max_stepsPerSecond = 35
+let res = 10
 let paused = false
 
 canvas.width = width
@@ -593,7 +593,7 @@ function loop(){
 
     setTimeout(() => {
         requestAnimationFrame(loop)
-    }, 1000 / stepsPerSecond);
+    }, 1000 / max_stepsPerSecond);
     step++
 
 //   --updates--
